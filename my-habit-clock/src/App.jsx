@@ -4,6 +4,7 @@ import ModeButtons from './components/ModeButtons';
 import Clock from './components/Clock';
 import WorkTable from './components/WorkTable';
 import GoalSettings from './components/GoalSettings';
+import Badges from './components/Badges';
 import { saveSession, getSessions } from './data/storage';
 
 export default function App() {
@@ -53,6 +54,7 @@ export default function App() {
       </p>
       <WorkTable key={refreshKey} />
       <GoalSettings onGoalsSaved={() => setRefreshKey((k) => k + 1)} />
+      <Badges key={`badges-${refreshKey}`} />
     </div>
   );
 }
