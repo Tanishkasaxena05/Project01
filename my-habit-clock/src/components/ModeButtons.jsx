@@ -1,21 +1,16 @@
-const MODES = ['Sleep', 'Walk', 'Study', 'Work'];
+import { MODES, MODE_COLORS } from '../theme';
 
 export default function ModeButtons({ activeMode, onSelectMode }) {
   return (
-    <div style={{ display: 'flex', gap: '10px', margin: '20px 0' }}>
+    <div className="mode-row">
       {MODES.map((mode) => (
         <button
           key={mode}
+          className={`mode-btn${activeMode === mode ? ' active' : ''}`}
+          style={{ '--mode-color': MODE_COLORS[mode] }}
           onClick={() => onSelectMode(mode)}
-          style={{
-            padding: '10px 20px',
-            borderRadius: '8px',
-            border: activeMode === mode ? '2px solid #4f46e5' : '1px solid #ccc',
-            background: activeMode === mode ? '#eef2ff' : '#fff',
-            fontWeight: activeMode === mode ? 'bold' : 'normal',
-            cursor: 'pointer',
-          }}
         >
+          <span className="dot" />
           {mode}
         </button>
       ))}

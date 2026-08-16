@@ -1,4 +1,5 @@
 import { getSessions, getGoals } from '../data/storage';
+import { MODES, MODE_COLORS } from '../theme';
 
 function formatDuration(ms) {
   const totalSeconds = Math.floor(ms / 1000);
@@ -27,38 +28,28 @@ export default function WorkTable() {
     return acc;
   }, {});
 
-  const modes = ['Sleep', 'Walk', 'Study', 'Work'];
-
   return (
-    <div style={{ marginTop: '30px', textAlign: 'left' }}>
-      <h3 style={{ textAlign: 'center' }}>Today's Breakdown</h3>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <tbody>
-          {modes.map((mode) => {
-            const totalMs = totals[mode] || 0;
-            const goalMs = (goals[mode] || 0) * 60000;
-            const met = goalMs > 0 && totalMs >= goalMs;
-            const hasGoal = goalMs > 0;
+    <div className="panel">
+      <h3 className="panel-title">Today's Breakdown</h3>
+      {MODES.map((mode) => {
+        const totalMs = totals[mode] || 0;
+        const goalMs = (goals[mode] || 0) * 60000;
+        const hasGoal = goalMs > 0;
+        const met = hasGoal && totalMs >= goalMs;
 
-            return (
-              <tr key={mode} style={{ borderBottom: '1px solid #eee' }}>
-                <td style={{ padding: '8px 4px', fontWeight: 'bold' }}>{mode}</td>
-                <td
-                  style={{
-                    padding: '8px 4px',
-                    textAlign: 'right',
-                    fontFamily: 'monospace',
-                    color: hasGoal ? (met ? '#16a34a' : '#dc2626') : '#333',
-                  }}
-                >
-                  {formatDuration(totalMs)}
-                  {hasGoal && (met ? ' ✓' : ` / ${goals[mode]}m`)}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+        return (
+          <div className="row-line" key={mode}>
+            <span className="row-label">
+              <span className="row-dot" style={{ background: MODE_COLORS[mode] }} />
+              {mode}
+            </span>
+            <span className={`row-value${hasGoal ? (met ? ' met' : ' missed') : ''}`}>
+              {formatDuration(totalMs)}
+              {hasGoal && (met ? ' ✓' : ` / ${goals[mode]}m`)}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }
