@@ -1,37 +1,53 @@
+import { useState, useEffect } from 'react';
 import { getStreak } from '../data/storage';
+import { MODES, MODE_COLORS } from '../theme';
 
-const MODES = ['Sleep', 'Walk', 'Study', 'Work'];
-const MILESTONES = [3, 7, 14, 30]; // day thresholds for badges
+const MILESTONES = [3, 7, 14, 30];
 
 export default function Badges() {
+  const [streaks, setStreaks] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const entries = await Promise.all(
+        MODES.map(async (mode) => [mode, await getStreak(mode)])
+      );
+      setStreaks(Object.fromEntries(entries));
+      setLoading(false);
+    })();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="panel">
+        <h3 className="panel-title">Streaks & Badges</h3>
+        <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>Loading...</p>
+      </div>
+    );
+  }
+
   return (
-    <div style={{ marginTop: '30px' }}>
-      <h3 style={{ textAlign: 'center' }}>Streaks & Badges</h3>
+    <div className="panel">
+      <h3 className="panel-title">Streaks & Badges</h3>
       {MODES.map((mode) => {
-        const streak = getStreak(mode);
-        const earnedBadges = MILESTONES.filter((m) => streak >= m);
+        const streak = streaks[mode] || 0;
+        const earned = MILESTONES.filter((m) => streak >= m);
 
         return (
-          <div key={mode} style={{ marginBottom: '14px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div className="streak-row" key={mode}>
+            <div className="streak-head">
               <strong>{mode}</strong>
-              <span style={{ color: streak > 0 ? '#16a34a' : '#999' }}>
-                {streak} day{streak === 1 ? '' : 's'} streak
-              </span>
+              <span className="streak-count">{streak} day{streak === 1 ? '' : 's'}</span>
             </div>
-            <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
+            <div className="badge-pills">
               {MILESTONES.map((m) => (
                 <span
                   key={m}
-                  style={{
-                    padding: '2px 8px',
-                    borderRadius: '12px',
-                    fontSize: '0.75rem',
-                    background: earnedBadges.includes(m) ? '#4f46e5' : '#eee',
-                    color: earnedBadges.includes(m) ? '#fff' : '#999',
-                  }}
+                  className={`badge-pill${earned.includes(m) ? ' earned' : ''}`}
+                  style={{ '--mode-color': MODE_COLORS[mode] }}
                 >
-                  {m}-Day
+                  {m}d
                 </span>
               ))}
             </div>

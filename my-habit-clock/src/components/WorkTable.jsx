@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { getSessions, getGoals } from '../data/storage';
 import { MODES, MODE_COLORS } from '../theme';
 
@@ -20,13 +21,34 @@ function isToday(timestamp) {
 }
 
 export default function WorkTable() {
-  const sessions = getSessions().filter((s) => isToday(s.startedAt));
-  const goals = getGoals();
+  const [totals, setTotals] = useState({});
+  const [goals, setGoals] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  const totals = sessions.reduce((acc, s) => {
-    acc[s.mode] = (acc[s.mode] || 0) + s.durationMs;
-    return acc;
-  }, {});
+  useEffect(() => {
+    (async () => {
+      const [sessions, goalsData] = await Promise.all([getSessions(), getGoals()]);
+      const todaySessions = sessions.filter((s) => isToday(s.startedAt));
+
+      const computedTotals = todaySessions.reduce((acc, s) => {
+        acc[s.mode] = (acc[s.mode] || 0) + s.durationMs;
+        return acc;
+      }, {});
+
+      setTotals(computedTotals);
+      setGoals(goalsData);
+      setLoading(false);
+    })();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="panel">
+        <h3 className="panel-title">Today's Breakdown</h3>
+        <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="panel">
