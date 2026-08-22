@@ -42,6 +42,7 @@ export default function WorkTable() {
   }, []);
 
   if (loading) {
+    const hasAnyData = Object.keys(totals).length > 0;
     return (
       <div className="panel">
         <h3 className="panel-title">Today's Breakdown</h3>

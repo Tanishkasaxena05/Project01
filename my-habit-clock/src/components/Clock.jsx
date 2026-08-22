@@ -21,8 +21,13 @@ export default function Clock({ elapsedMs, activeMode, isRunning, goalMs }) {
       <div className="dial-inner">
         <div className="dial-time">{formatElapsed(elapsedMs)}</div>
         <div className="dial-status">
-          {activeMode ? (isRunning ? `Tracking ${activeMode}` : `Paused · ${activeMode}`) : 'Select a mode'}
-        </div>
+  {activeMode ? (
+    <>
+      {isRunning && <span className="dial-live" style={{ background: color }} />}
+      {isRunning ? `Tracking ${activeMode}` : `Paused · ${activeMode}`}
+    </>
+  ) : 'Select a mode'}
+</div>
         {goalMs > 0 && <div className="dial-progress">{Math.round(progress * 100)}% of goal</div>}
       </div>
     </div>
