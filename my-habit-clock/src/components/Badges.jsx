@@ -21,7 +21,7 @@ export default function Badges() {
   if (loading) {
     return (
       <div className="panel">
-        <h3 className="panel-title">Streaks & Badges</h3>
+        <div className="panel-header"><span className="bar" /><h3 className="panel-title">Streaks & Badges</h3></div>
         <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>Loading...</p>
       </div>
     );

@@ -9,26 +9,28 @@ function formatElapsed(ms) {
 }
 
 export default function Clock({ elapsedMs, activeMode, isRunning, goalMs }) {
-  const color = activeMode ? MODE_COLORS[activeMode] : '#2e3244';
-  const progress = goalMs > 0 ? Math.min(elapsedMs / goalMs, 1) : isRunning ? 0.05 : 0;
+  const color = activeMode ? MODE_COLORS[activeMode] : '#262a3a';
+  const progress = goalMs > 0 ? Math.min(elapsedMs / goalMs, 1) : isRunning ? 0.04 : 0;
   const angle = Math.round(progress * 360);
 
   return (
-    <div
-      className="dial"
-      style={{ background: `conic-gradient(${color} ${angle}deg, #2e3244 ${angle}deg)` }}
-    >
-      <div className="dial-inner">
-        <div className="dial-time">{formatElapsed(elapsedMs)}</div>
-        <div className="dial-status">
-  {activeMode ? (
-    <>
-      {isRunning && <span className="dial-live" style={{ background: color }} />}
-      {isRunning ? `Tracking ${activeMode}` : `Paused · ${activeMode}`}
-    </>
-  ) : 'Select a mode'}
-</div>
-        {goalMs > 0 && <div className="dial-progress">{Math.round(progress * 100)}% of goal</div>}
+    <div className="dial-section">
+      <div
+        className="dial"
+        style={{ background: `conic-gradient(${color} ${angle}deg, #262a3a ${angle}deg)` }}
+      >
+        <div className="dial-inner">
+          <div className="dial-time">{formatElapsed(elapsedMs)}</div>
+          <div className="dial-status" style={{ color: isRunning ? color : undefined }}>
+            {activeMode ? (
+              <>
+                {isRunning && <span className="dial-live" style={{ background: color, color }} />}
+                {isRunning ? `Tracking ${activeMode}` : `Paused · ${activeMode}`}
+              </>
+            ) : 'Select a mode'}
+          </div>
+          {goalMs > 0 && <div className="dial-progress">{Math.round(progress * 100)}% of goal</div>}
+        </div>
       </div>
     </div>
   );

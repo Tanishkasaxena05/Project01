@@ -17,7 +17,6 @@ export default function App() {
   const { elapsedMs, isRunning, start, stop, reset } = useTimer();
   const sessionStartRef = useRef(null);
   const [refreshKey, setRefreshKey] = useState(0);
-
   const [sessionCount, setSessionCount] = useState(0);
   const [goalMs, setGoalMs] = useState(0);
 
@@ -26,13 +25,11 @@ export default function App() {
     return unsub;
   }, []);
 
-  // Reload session count + active mode's goal whenever data changes or mode switches
   useEffect(() => {
     if (!user) return;
     (async () => {
       const sessions = await getSessions();
       setSessionCount(sessions.length);
-
       const goals = await getGoals();
       setGoalMs(activeMode ? (goals[activeMode] || 0) * 60000 : 0);
     })();
@@ -76,21 +73,32 @@ export default function App() {
     return <AuthScreen />;
   }
 
-  return (
+    return (
     <div className="app-shell">
-      <div className="app-eyebrow">Daily Rhythm</div>
-      <h1 className="app-title">Habit Clock</h1>
-      <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '-30px', marginBottom: '30px' }}>
-        {user.email} · <span style={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => signOut(auth)}>Log out</span>
-      </p>
+      <div className="top-bar">
+        <div className="brand">
+          <div className="brand-mark">HC</div>
+          <div className="brand-name">Habit Clock</div>
+        </div>
+        <div className="user-pill">
+          {user.email.split('@')[0]}
+          <button onClick={() => signOut(auth)}>Log out</button>
+        </div>
+      </div>
 
-      <Clock elapsedMs={elapsedMs} activeMode={activeMode} isRunning={isRunning} goalMs={goalMs} />
-      <ModeButtons activeMode={activeMode} onSelectMode={handleSelectMode} />
-      <p className="session-count">{sessionCount} sessions logged</p>
+      <div className="layout">
+        <div className="layout-left">
+          <Clock elapsedMs={elapsedMs} activeMode={activeMode} isRunning={isRunning} goalMs={goalMs} />
+          <ModeButtons activeMode={activeMode} onSelectMode={handleSelectMode} />
+          <p className="session-count">{sessionCount} sessions logged</p>
+        </div>
 
-      <WorkTable key={refreshKey} />
-      <GoalSettings onGoalsSaved={() => setRefreshKey((k) => k + 1)} />
-      <Badges key={`badges-${refreshKey}`} />
+        <div className="layout-right">
+          <WorkTable key={refreshKey} />
+          <GoalSettings onGoalsSaved={() => setRefreshKey((k) => k + 1)} />
+          <Badges key={`badges-${refreshKey}`} />
+        </div>
+      </div>
     </div>
   );
 }
